@@ -1,0 +1,13 @@
+{
+  "name": "Cell Score",
+  "short_name": "Cell Score",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color" : "#fff" ,
+  "description": "Cell Score.",
+  "icons": [ {
+    "src": "assets/images/homescreen192.png",
+    "sizes": "192x192",
+    "type": "image/png"
+  }]
+}

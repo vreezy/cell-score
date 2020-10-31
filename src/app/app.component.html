@@ -1,0 +1,51 @@
+<style>
+
+   .main {
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      /* border: 3px solid green; */
+   }
+</style>
+
+<div class="main">
+   <div *ngIf="loading">
+   loading...
+   </div>
+
+   <div *ngIf="!loading && zone == 1">
+      <button (click)="switchZone()">GOLF14 </button><br />
+      Cell-Score for Region: {{ data.result.regionName }} <br />
+
+      RES: {{ data.result.gameScore[0] }} <br />
+      ENL: {{ data.result.gameScore[1] }}
+
+
+      <div id="chart">
+         <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [labels]="chartOptions.labels"
+            [responsive]="chartOptions.responsive"></apx-chart>
+      </div>
+
+   </div>
+
+   <div *ngIf="!loading && zone == 2">
+      <button (click)="switchZone()">GOLF15 </button><br />
+      Cell-Score for Region: {{ data2.result.regionName }} <br />
+
+      RES: {{ data2.result.gameScore[0] }} <br />
+      ENL: {{ data2.result.gameScore[1] }}
+
+
+      <div id="chart">
+         <apx-chart [series]="chartOptions2.series" [chart]="chartOptions2.chart" [labels]="chartOptions2.labels"
+            [responsive]="chartOptions2.responsive"></apx-chart>
+      </div>
+
+   </div>
+</div>
+
+
+
+<router-outlet></router-outlet>
