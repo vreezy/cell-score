@@ -1,20 +1,18 @@
    import { Component } from '@angular/core';
    import { ChartComponent } from "ng-apexcharts";
    
-
-
    import {
       ApexNonAxisChartSeries,
       ApexResponsive,
       ApexChart
    } from "ng-apexcharts";
 
-   export type ChartOptions = {
-      series: ApexNonAxisChartSeries;
-      chart: ApexChart;
-      responsive: ApexResponsive[];
-      labels: any;
-   };
+   // export type ChartOptions = {
+   //    series: ApexNonAxisChartSeries;
+   //    chart: ApexChart;
+   //    responsive: ApexResponsive[];
+   //    labels: any;
+   // };
 
    const chartOptions = {
       series: [50,50],
@@ -77,6 +75,7 @@
    //       format: 'dd/MM/yy HH:mm'
    //    },
    }
+
 
 
    @Component({
@@ -151,25 +150,18 @@
          })
          .reverse();
 
-         this.chartOptions.push(chartOptionsClone)
+         this.chartOptions.push(chartOptionsClone);
 
          // chart2
-         const chartOptionsMixedClone = Object.assign({}, chartOptionsMixedModel)
-
+         const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel));
+         
          parsed.result.scoreHistory
          .reverse()
          .forEach((element: string[]) => {
-            console.log(element[1])
-            chartOptionsMixedClone.series[0].data.push(parseInt(element[1]));
-            console.log(chartOptionsMixedClone.series[0].data)
-            chartOptionsMixedClone.series[1].data.push(parseInt(element[2]));
+            chartOptionsMixedClone.series[0].data.push(parseInt(element[2]));
+            chartOptionsMixedClone.series[1].data.push(parseInt(element[1]));
             chartOptionsMixedClone.xaxis.categories.push(element[0]);
          });
-
-          console.log(url)
-         // console.log(parsed.result.scoreHistory[0]);
-         // console.log(chartOptionsMixedClone.series[0].data[0]);
-         
 
          this.chartOptionsMixed.push(chartOptionsMixedClone);
       }

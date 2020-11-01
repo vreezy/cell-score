@@ -18,12 +18,16 @@
    <div *ngIf="!loading">
       
       <mat-card>
-         <mat-card-title>{{ response[index].result.regionName }}</mat-card-title>
+         <mat-card-title>
+            {{ response[index].result.regionName }}
+            
+            <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
+         </mat-card-title>
          <mat-card-content>
             RES: {{ response[index].result.gameScore[0] }} <br />
             ENL: {{ response[index].result.gameScore[1] }} <br />
 
-                  
+              
             <div id="chart">
                <apx-chart 
                   [series]="chartOptions[index].series"
@@ -37,32 +41,21 @@
                </apx-chart>
 
                
-            History
-            <apx-chart 
-               [series]="chartOptionsMixed[index].series"
-               [chart]="chartOptionsMixed[index].chart"
-               [colors]="chartOptionsMixed[index].colors"
-               [dataLabels]="chartOptionsMixed[index].dataLabels"
-               [stroke]="chartOptionsMixed[index].stroke"
-               [xaxis]="chartOptionsMixed[index].xaxis"
-               [theme]="chartOptionsMixed[index].theme">
-            </apx-chart>
+               History
+               <apx-chart 
+                  [series]="chartOptionsMixed[index].series"
+                  [chart]="chartOptionsMixed[index].chart"
+                  [colors]="chartOptionsMixed[index].colors"
+                  [dataLabels]="chartOptionsMixed[index].dataLabels"
+                  [stroke]="chartOptionsMixed[index].stroke"
+                  [xaxis]="chartOptionsMixed[index].xaxis"
+                  [theme]="chartOptionsMixed[index].theme">
+               </apx-chart>
                
             </div>
 
-
-
-
          </mat-card-content>
-
-         <mat-card-actions>
-            <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
-         </mat-card-actions>
-      
       </mat-card>
-
-
-
    </div>
 </div>
 

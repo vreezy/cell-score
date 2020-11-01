@@ -1,8 +1,11 @@
-# install
+# Install
+
 npm install
 
-# SERVE
+## SERVE
+
 ng serve
 
-# BUILD
+## BUILD
+
 ng build --prod --base-href /ingress/cell-score/
