@@ -169,6 +169,7 @@
           console.log(url)
          // console.log(parsed.result.scoreHistory[0]);
          // console.log(chartOptionsMixedClone.series[0].data[0]);
+         
 
          this.chartOptionsMixed.push(chartOptionsMixedClone);
       }
