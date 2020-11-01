@@ -7,14 +7,19 @@ header("Access-Control-Allow-Methods: GET");
 try {
    $zone = htmlspecialchars($_GET["zone"]);
    switch($zone) {
-      case 2:
+      case "2":
          $url = "http://161.97.93.182:5000/zone2/";
+         break;
       default:
          $url = "http://161.97.93.182:5000/zone1/";
+         break;
    }
 
-   $content = file_get_contents(url);
+   
+
+   $content = file_get_contents($url);
    http_response_code(200);
+   
    echo json_encode($content);
 } catch (Any $e) {
     http_response_code(503);

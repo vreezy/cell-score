@@ -1,5 +1,6 @@
    import { Component } from '@angular/core';
    import { ChartComponent } from "ng-apexcharts";
+   
 
 
    import {
@@ -15,6 +16,69 @@
       labels: any;
    };
 
+   const chartOptions = {
+      series: [50,50],
+      chart: {
+         height: 350,
+         type: "donut"
+      },
+      labels: ["RES", "ENL"],
+      colors: [
+         "#005684", // darkblue
+         "#017f01", // darkgreen
+         "#00c5ff", // lightblue
+         "#03fe03" // lightgreen
+      ],
+      dataLabels: {
+         enabled: true
+      },
+      legend: {
+         show: false,
+         position: 'bottom',
+      },
+      theme: {
+         mode: 'dark', 
+      }
+   };
+
+   const chartOptionsMixedModel = {
+   series: [{
+      name: 'RES',
+      data: []
+   }, {
+      name: 'ENL',
+      data: []
+   }],
+   chart: {
+      height: 350,
+      type: 'area'
+   },
+   colors: [
+      "#005684", // darkblue
+      "#017f01", // darkgreen
+      "#00c5ff", // lightblue
+      "#03fe03" // lightgreen
+   ],
+   dataLabels: {
+      enabled: false
+   },
+   stroke: {
+      curve: 'smooth'
+   },
+   xaxis: {
+      // type: 'datetime',
+      categories: []
+   },
+   theme: {
+      mode: 'dark', 
+   }
+   // tooltip: {
+   //    x: {
+   //       format: 'dd/MM/yy HH:mm'
+   //    },
+   }
+
+
    @Component({
    selector: 'app-root',
    templateUrl: './app.component.html',
@@ -24,96 +88,90 @@
       //  @ViewChild("chart") chart: ChartComponent;
 
    loading = true;
-   data = {};
-   data2 = {};
-   zone = 1;
+   error = false;
+   fetchURLS = [
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2"
+   ]
 
-   chartOptions = {
-      series: [50,50],
-      chart: {
-      type: "donut"
-      },
-      labels: ["RES", "ENL"],
-
-   };
-
-   chartOptions2 = {
-      series: [50,50],
-      chart: {
-      type: "donut"
-      },
-      labels: ["RES", "ENL"],
-
-   };
-
+   response = [];
+   chartOptions = [];
+   chartOptionsMixed = [];
+   index = 0;
+   
    async ngOnInit() {
-      await this.getData1();
-      await this.getData2();
-      this.loading = false;
-      // this.getData1()
-      // .then(() => {
-      //    this.getData2()
-      // })
-      // .then(() => {
-         
-      // });
+      const promises = this.fetchURLS.map((url: string) => {
+         return this.getData(url);
+      })
+      const results = await Promise.all(promises);
+            
+      if(results.every((result:boolean) => { return result})) {
+         this.loading = false;
+      } else {
+         this.error = true;
+      }
    }
 
-   switchZone(): void {
-      if (this.zone === 1) {
-         this.zone = 2;
+   switchZone(index: number): void {
+      if(index + 1 === this.response.length) {
+         this.index = 0;
       }
       else {
-         this.zone = 1;
+         this.index = index + 1;
       }
    }
 
-   async getData1(): Promise<boolean> {
-      const url = "https://www.vreezy.de/ingress/cell-score/zone1.php";
+   getNextZoneName(index: number): void {
+      if(index + 1 === this.response.length) {
+         return this.response[0].result.regionName
+      }
+      else {
+         return this.response[index + 1].result.regionName
+      }
+   }
 
+   async getData(url: string): Promise<boolean> {
       const response = await fetch(url);
 
       if (response.status !== 200) {
-      console.log('Looks like there was a problem. Status Code: ' + response.status);
+         console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
+         return false;
       }
       else {
-      const myJson = await response.json();
-      const parsed = JSON.parse(myJson);
-      console.log();
-      this.data = parsed;
-      console.log(parsed.result.gameScore);
-      this.chartOptions.series = parsed.result.gameScore.map((element: string): number => {
-         return parseInt(element);
-      })
-      .reverse();
+         const myJson = await response.json();
+         const parsed = JSON.parse(myJson);
+         this.response.push(parsed);
 
+         // chart1
+         const chartOptionsClone = Object.assign({}, chartOptions)
+
+         chartOptionsClone.series = parsed.result.gameScore
+         .map((element: string): number => {
+            return parseInt(element);
+         })
+         .reverse();
+
+         this.chartOptions.push(chartOptionsClone)
+
+         // chart2
+         const chartOptionsMixedClone = Object.assign({}, chartOptionsMixedModel)
+
+         parsed.result.scoreHistory
+         .reverse()
+         .forEach((element: string[]) => {
+            console.log(element[1])
+            chartOptionsMixedClone.series[0].data.push(parseInt(element[1]));
+            console.log(chartOptionsMixedClone.series[0].data)
+            chartOptionsMixedClone.series[1].data.push(parseInt(element[2]));
+            chartOptionsMixedClone.xaxis.categories.push(element[0]);
+         });
+
+          console.log(url)
+         // console.log(parsed.result.scoreHistory[0]);
+         // console.log(chartOptionsMixedClone.series[0].data[0]);
+
+         this.chartOptionsMixed.push(chartOptionsMixedClone);
       }
-
       return true;
    }
-
-   async getData2(): Promise<boolean> {
-      const url = "https://www.vreezy.de/ingress/cell-score/zone2.php";
-   
-      const response = await fetch(url);
-   
-      if (response.status !== 200) {
-      console.log('Looks like there was a problem. Status Code: ' + response.status);
-      }
-      else {
-      const myJson = await response.json();
-      const parsed = JSON.parse(myJson);
-      console.log(parsed);
-      this.data2 = parsed;
-      console.log(parsed.result.gameScore);
-      this.chartOptions2.series = parsed.result.gameScore.map((element: string): number => {
-         return parseInt(element);
-      })
-      .reverse();
-
-      }
-
-      return true;
-   }
-   
 }
