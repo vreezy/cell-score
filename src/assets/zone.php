@@ -10,6 +10,9 @@ try {
       case "2":
          $url = "http://161.97.93.182:5000/zone2/";
          break;
+      case "3":
+         $url = "http://161.97.93.182:5000/zone3/";
+         break;
       default:
          $url = "http://161.97.93.182:5000/zone1/";
          break;

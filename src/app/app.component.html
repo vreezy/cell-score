@@ -19,13 +19,18 @@
       
       <mat-card>
          <mat-card-title>
-            {{ response[index].result.regionName }}
-            
+            {{ response[index].result.regionName }} 
+
             <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
          </mat-card-title>
          <mat-card-content>
+            Cycle:{{ year }}.{{ cycleDisplay }} <br/>
+            Next Checkpoint: {{ checkpoints[currentCheckPoint + 1].date }} {{ checkpoints[currentCheckPoint + 1 ].time }} Uhr<br />
+            Letzter Checkpoint: {{ checkpoints[34].date }} {{ checkpoints[34].time }} Uhr<br />
+            <br />
             RES: {{ response[index].result.gameScore[0] }} <br />
             ENL: {{ response[index].result.gameScore[1] }} <br />
+            
 
               
             <div id="chart">
@@ -49,7 +54,8 @@
                   [dataLabels]="chartOptionsMixed[index].dataLabels"
                   [stroke]="chartOptionsMixed[index].stroke"
                   [xaxis]="chartOptionsMixed[index].xaxis"
-                  [theme]="chartOptionsMixed[index].theme">
+                  [theme]="chartOptionsMixed[index].theme"
+                  [markers]="chartOptionsMixed[index].markers">
                </apx-chart>
                
             </div>

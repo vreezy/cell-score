@@ -1,5 +1,6 @@
    import { Component } from '@angular/core';
    import { ChartComponent } from "ng-apexcharts";
+   import * as moment from 'moment';
    
    import {
       ApexNonAxisChartSeries,
@@ -61,7 +62,7 @@
       enabled: false
    },
    stroke: {
-      curve: 'smooth'
+      curve: 'smooth' // 'straight'
    },
    xaxis: {
       // type: 'datetime',
@@ -69,6 +70,9 @@
    },
    theme: {
       mode: 'dark', 
+   },
+   markers: {
+      size: 5,
    }
    // tooltip: {
    //    x: {
@@ -90,13 +94,25 @@
    error = false;
    fetchURLS = [
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
-      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2"
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
    ]
 
    response = [];
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
+
+   EPOCH = 1389150000000;
+   CYCLE_LENGTH = 630000000;
+   CHECKPOINT_LENGTH = 18000000;
+   cycle = 0;
+   currentCycle = 0;
+   cycleDisplay = 0;
+   year = 0;
+   checkpoints = [];
+   currentCheckPoint = 0;
+   UTC = false;
    
    async ngOnInit() {
       const promises = this.fetchURLS.map((url: string) => {
@@ -109,6 +125,9 @@
       } else {
          this.error = true;
       }
+
+      this.setCycle();
+      this.calcCycle();
    }
 
    switchZone(index: number): void {
@@ -128,6 +147,70 @@
          return this.response[index + 1].result.regionName
       }
    }
+
+   setCycle(): void {
+      this.cycle = this.currentCycle = Math.floor((new Date().getTime() - this.EPOCH) / this.CYCLE_LENGTH);
+   }
+
+   formatDate(date, format) {
+      if (this.UTC) {
+         return moment(date).utc().format(format);
+      }
+      return moment(date).lang("de").format(format);
+   }
+
+   isNext(start, now) {
+      return (start.getTime() > now && (now + this.CHECKPOINT_LENGTH) > start.getTime());
+   }
+
+   calcCycle(cycle = this.cycle) {
+      var lock = false
+      var start = new Date();
+      var now = start.getTime();
+      var year: number = parseInt(this.formatDate(start, 'YYYY'));
+      var cycleDisplay = cycle+1;
+      start.setTime(this.EPOCH + (cycle*this.CYCLE_LENGTH));
+      year = parseInt(this.formatDate(start, 'YYYY'));
+      start.setTime(start.getTime()+this.CHECKPOINT_LENGTH); // No measurement is taken until the first checkpoint after rollover.
+      var checkpoints = [];
+      for (var i=0;i<35;i++) {
+            //   var next = this.isNext(start, now);
+              checkpoints[i] = {
+                      date: this.formatDate(start, 'dddd D MMM') + (this.UTC ? ' UTC' : ''),
+                      time: this.formatDate(start, 'HH:mm'),
+                     //  classes: (next ? 'next' : (start.getTime() < now ? 'past' : 'upcoming')) + (i==34 ? ' final' : ''),
+                     //  next: next
+              };
+               // checkpoints[i] = {
+               //    date: this.formatDate(start, 'ddd D MMM') + (this.UTC ? ' UTC' : ''),
+               //    time: this.formatDate(start, 'HH:mm'),
+               //    classes: (next ? 'next' : (start.getTime() < now ? 'past' : 'upcoming')) + (i==34 ? ' final' : ''),
+               //    next: next
+               // };
+              start.setTime(start.getTime()+this.CHECKPOINT_LENGTH);
+            if (now < start.getTime() && !lock) {
+               this.currentCheckPoint = i;
+               lock = true;
+            }
+
+      }
+      if (year > 2014) {
+              var yearEnd = new Date(year-1, 11, 31, 23, 59);
+              var lastCycle = Math.floor((yearEnd.getTime() -this.EPOCH) / this.CYCLE_LENGTH);
+              cycleDisplay = cycle - lastCycle;
+      }
+
+
+      this.checkpoints = checkpoints;
+      this.year = year;
+      this.cycleDisplay = cycleDisplay;
+      // if (cycleDisplay < 10) {
+      //    cycleDisplay = ''+'0'+cycleDisplay;
+      // }     
+      //    return {cycle: year+'.'+(cycleDisplay), checkpoints:checkpoints, current:(cycle == currentCycle)};
+   }
+
+
 
    async getData(url: string): Promise<boolean> {
       const response = await fetch(url);
