@@ -15,6 +15,7 @@
    //    labels: any;
    // };
 
+
    const chartOptions = {
       series: [50,50],
       chart: {
@@ -96,12 +97,13 @@
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
-   ]
-
+   ];
+   
    response = [];
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
+   indexZeroValue = "xxx";
 
    EPOCH = 1389150000000;
    CYCLE_LENGTH = 630000000;
@@ -112,8 +114,10 @@
    year = 0;
    checkpoints = [];
    currentCheckPoint = 0;
+   nextCheckPoint = 0;
    UTC = false;
-   
+
+
    async ngOnInit() {
       const promises = this.fetchURLS.map((url: string) => {
          return this.getData(url);
@@ -128,6 +132,14 @@
 
       this.setCycle();
       this.calcCycle();
+      this.setNextCheckPoint();
+      this.setIndexZeroValue();
+   }
+
+   getScorePercent(team1: string , team2: string ): string {
+      const total: number = parseInt(team1) + parseInt(team2);
+      const totalPercent = 100 / total;
+      return (totalPercent * parseInt(team1)).toFixed(2).replace('.', ',');
    }
 
    switchZone(index: number): void {
@@ -137,6 +149,20 @@
       else {
          this.index = index + 1;
       }
+   }
+
+   setIndexZeroValue() {
+      this.indexZeroValue = this.response[0].result.regionName;
+   }
+
+   setNextCheckPoint(): void {
+      if (this.currentCheckPoint + 1 < this.checkpoints.length) {
+         this.nextCheckPoint = this.currentCheckPoint + 1;
+      }
+      else {
+         this.nextCheckPoint = this.checkpoints.length - 1;
+      }
+      
    }
 
    getNextZoneName(index: number): void {
@@ -156,11 +182,15 @@
       if (this.UTC) {
          return moment(date).utc().format(format);
       }
-      return moment(date).lang("de").format(format);
+      return moment(date).locale('de').format(format);
    }
 
    isNext(start, now) {
       return (start.getTime() > now && (now + this.CHECKPOINT_LENGTH) > start.getTime());
+   }
+
+   changeIndex(index: number) {
+      this.index = index;
    }
 
    calcCycle(cycle = this.cycle) {
@@ -210,8 +240,6 @@
       //    return {cycle: year+'.'+(cycleDisplay), checkpoints:checkpoints, current:(cycle == currentCycle)};
    }
 
-
-
    async getData(url: string): Promise<boolean> {
       const response = await fetch(url);
 
@@ -223,6 +251,7 @@
          const myJson = await response.json();
          const parsed = JSON.parse(myJson);
          this.response.push(parsed);
+         console.log(parsed);
 
          // chart1
          const chartOptionsClone = Object.assign({}, chartOptions)

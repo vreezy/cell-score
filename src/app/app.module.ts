@@ -12,7 +12,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatButtonModule} from '@angular/material/button';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatCardModule} from '@angular/material/card';
-
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 
 @NgModule({
@@ -25,7 +27,10 @@ import {MatCardModule} from '@angular/material/card';
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
+    MatGridListModule,
     NgApexchartsModule,
+    MatProgressBarModule,
+    MatExpansionModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     BrowserAnimationsModule,
   ],

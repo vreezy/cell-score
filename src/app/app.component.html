@@ -8,6 +8,24 @@
       /* border: 3px solid green; */
    }
 
+   mat-button-toggle-group {
+      flex-wrap: wrap;
+   }
+
+   .score {
+      font-size: 1.2rem;
+   }
+
+   @media screen and (max-width: 820px) {
+      .score {
+         font-size: 0.7rem;
+      }
+
+      mat-button-toggle-group {
+         font-size: 0.7rem
+      }
+   }
+
 </style>
 
 <div *ngIf="!error" >
@@ -16,52 +34,58 @@
    </div>
 
    <div *ngIf="!loading">
-      
-      <mat-card>
-         <mat-card-title>
-            {{ response[index].result.regionName }} 
 
-            <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
-         </mat-card-title>
-         <mat-card-content>
-            Cycle:{{ year }}.{{ cycleDisplay }} <br/>
-            Next Checkpoint: {{ checkpoints[currentCheckPoint + 1].date }} {{ checkpoints[currentCheckPoint + 1 ].time }} Uhr<br />
-            Letzter Checkpoint: {{ checkpoints[34].date }} {{ checkpoints[34].time }} Uhr<br />
-            <br />
-            RES: {{ response[index].result.gameScore[0] }} <br />
-            ENL: {{ response[index].result.gameScore[1] }} <br />
-            
+      <mat-button-toggle-group name="fontStyle" aria-label="Font Style" [value]="indexZeroValue">
+         <mat-button-toggle *ngFor="let ele of response; index as i" (click)="changeIndex(i)" [value]="ele.result.regionName">
+            {{ele.result.regionName}}
+         </mat-button-toggle>
+      </mat-button-toggle-group>
 
-              
-            <div id="chart">
-               <apx-chart 
-                  [series]="chartOptions[index].series"
-                  [chart]="chartOptions[index].chart"
-                  [labels]="chartOptions[index].labels"
-                  [colors]="chartOptions[index].colors"
-                  [responsive]="chartOptions[index].responsive"
-                  [dataLabels]="chartOptions[index].dataLabels"
-                  [legend]="chartOptions[index].legend"
-                  [theme]="chartOptions[index].theme">
-               </apx-chart>
+      <!-- OLD BUTTON -->
+      <!-- {{ response[index].result.regionName }} 
+      <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
+      <br /> -->
 
-               
-               History
-               <apx-chart 
-                  [series]="chartOptionsMixed[index].series"
-                  [chart]="chartOptionsMixed[index].chart"
-                  [colors]="chartOptionsMixed[index].colors"
-                  [dataLabels]="chartOptionsMixed[index].dataLabels"
-                  [stroke]="chartOptionsMixed[index].stroke"
-                  [xaxis]="chartOptionsMixed[index].xaxis"
-                  [theme]="chartOptionsMixed[index].theme"
-                  [markers]="chartOptionsMixed[index].markers">
-               </apx-chart>
-               
-            </div>
+      <br /><br />
+      Cycle:{{ year }}.{{ cycleDisplay }} <br/>
+      Nächster Checkpoint: {{ checkpoints[nextCheckPoint].date }} {{ checkpoints[nextCheckPoint].time }} Uhr<br />
+      Letzter Checkpoint: {{ checkpoints[34].date }} {{ checkpoints[34].time }} Uhr<br />
 
-         </mat-card-content>
-      </mat-card>
+      <br />
+      <mat-grid-list cols="2" rowHeight="60px">
+         <mat-grid-tile class="score" style="background-color:#017f01;">
+            ENL: {{ response[index].result.gameScore[0] }} ({{ getScorePercent(response[index].result.gameScore[0], response[index].result.gameScore[1])}}%)
+         </mat-grid-tile>
+         <mat-grid-tile class="score" style="background-color: #005684">
+            RES: {{ response[index].result.gameScore[1] }} ({{ getScorePercent(response[index].result.gameScore[1], response[index].result.gameScore[0])}}%)
+         </mat-grid-tile>
+      </mat-grid-list>
+
+      <br />
+      <div id="chart">
+         <!-- <apx-chart 
+            [series]="chartOptions[index].series"
+            [chart]="chartOptions[index].chart"
+            [labels]="chartOptions[index].labels"
+            [colors]="chartOptions[index].colors"
+            [responsive]="chartOptions[index].responsive"
+            [dataLabels]="chartOptions[index].dataLabels"
+            [legend]="chartOptions[index].legend"
+            [theme]="chartOptions[index].theme">
+         </apx-chart> -->
+
+         <apx-chart 
+            [series]="chartOptionsMixed[index].series"
+            [chart]="chartOptionsMixed[index].chart"
+            [colors]="chartOptionsMixed[index].colors"
+            [dataLabels]="chartOptionsMixed[index].dataLabels"
+            [stroke]="chartOptionsMixed[index].stroke"
+            [xaxis]="chartOptionsMixed[index].xaxis"
+            [theme]="chartOptionsMixed[index].theme"
+            [markers]="chartOptionsMixed[index].markers">
+         </apx-chart>
+
+      </div>
    </div>
 </div>
 
