@@ -121,6 +121,18 @@
       this.calcCycle();
       this.setNextCheckPoint();
       this.setIndexZeroValue();
+
+      this.refreshAfterCheckPoint()
+
+      
+   }
+
+   refreshAfterCheckPoint() {
+      const refreshDate = new Date();
+      refreshDate.setMinutes( refreshDate.getMinutes() + 3 );
+
+      const refreshMilliSeconds = this.checkpoints[this.nextCheckPoint].getTime - refreshDate.getTime();
+      window.setInterval('window.location.reload()', refreshMilliSeconds)
    }
 
    sortResponse(): void {
@@ -147,7 +159,18 @@
    }
 
    setIndexZeroValue() {
-      this.indexZeroValue = this.response[0].result.regionName;
+      if(localStorage.getItem('index')) {
+         if(parseInt(localStorage.getItem('index')) < this.response.length) {
+            this.index = parseInt(localStorage.getItem('index'));
+            this.indexZeroValue = this.response[this.index].result.regionName
+         }
+         else {
+            this.indexZeroValue = this.response[0].result.regionName;
+         }
+      }
+      else {
+         this.indexZeroValue = this.response[0].result.regionName;
+      }
    }
 
    setNextCheckPoint(): void {
@@ -176,6 +199,7 @@
 
    changeIndex(index: number) {
       this.index = index;
+      localStorage.setItem('index', index.toString());
    }
 
    calcCycle(cycle = this.cycle) {
@@ -193,6 +217,7 @@
               checkpoints[i] = {
                       date: this.formatDate(start, 'dddd D MMM') + (this.UTC ? ' UTC' : ''),
                       time: this.formatDate(start, 'HH:mm'),
+                      getTime: start.getTime()
                      //  classes: (next ? 'next' : (start.getTime() < now ? 'past' : 'upcoming')) + (i==34 ? ' final' : ''),
                      //  next: next
               };
@@ -236,7 +261,7 @@
          const myJson = await response.json();
          const parsed = JSON.parse(myJson);
          this.response.push(parsed);
-         console.log(parsed);
+         // console.log(parsed);
 
          // chart1
          const chartOptionsClone = Object.assign({}, chartOptions)
