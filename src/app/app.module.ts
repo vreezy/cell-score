@@ -15,6 +15,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     NgApexchartsModule,
     MatProgressBarModule,
     MatExpansionModule,
+    MatDividerModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     BrowserAnimationsModule,
   ],

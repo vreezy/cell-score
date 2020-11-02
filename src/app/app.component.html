@@ -12,6 +12,14 @@
       flex-wrap: wrap;
    }
 
+   .enl {
+      background-color: #017f01;
+   }
+
+   .res {
+      background-color:#005684;
+   }
+
    .score {
       font-size: 1.2rem;
    }
@@ -41,17 +49,22 @@
          </mat-button-toggle>
       </mat-button-toggle-group>
 
+      <br /><br />
+      <mat-divider></mat-divider>
+
       <!-- OLD BUTTON -->
       <!-- {{ response[index].result.regionName }} 
       <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
       <br /> -->
 
-      <br /><br />
-      Cycle:{{ year }}.{{ cycleDisplay }} <br/>
+      <h2>Cycle: {{ year }}.{{ cycleDisplay }}</h2>
       Nächster Checkpoint: {{ checkpoints[nextCheckPoint].date }} {{ checkpoints[nextCheckPoint].time }} Uhr<br />
       Letzter Checkpoint: {{ checkpoints[34].date }} {{ checkpoints[34].time }} Uhr<br />
 
       <br />
+      <mat-divider></mat-divider>
+      <br />
+
       <mat-grid-list cols="2" rowHeight="60px">
          <mat-grid-tile class="score" style="background-color:#017f01;">
             ENL: {{ response[index].result.gameScore[0] }} ({{ getScorePercent(response[index].result.gameScore[0], response[index].result.gameScore[1])}}%)
@@ -86,7 +99,21 @@
          </apx-chart>
 
       </div>
+
+      <mat-divider></mat-divider>
+
+      <h2>Top-3-Player</h2>
+
+      <mat-grid-list cols="1" rowHeight="30px">
+         <mat-grid-tile *ngFor="let ele of response[index].result.topAgents; index as i" [ngClass]="{'enl' : ele.team === 'ENLIGHTENED', 'res' : ele.team === 'RESISTANCE'}" >
+            {{ ele.nick }}
+         </mat-grid-tile>
+
+      </mat-grid-list>
+
    </div>
+   <br/>
+   <br/>
 </div>
 
 <div *ngIf="error" class="main" >
