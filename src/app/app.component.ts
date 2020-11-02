@@ -3,7 +3,7 @@
 
 
    // interface 
-   import { IGetRegionScoreDetails } from './models/IgetRegionScoreDetails';
+   import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
 
    const chartOptions = {
       series: [50,50],
