@@ -1,20 +1,9 @@
    import { Component } from '@angular/core';
-   import { ChartComponent } from "ng-apexcharts";
    import * as moment from 'moment';
-   
-   import {
-      ApexNonAxisChartSeries,
-      ApexResponsive,
-      ApexChart
-   } from "ng-apexcharts";
 
-   // export type ChartOptions = {
-   //    series: ApexNonAxisChartSeries;
-   //    chart: ApexChart;
-   //    responsive: ApexResponsive[];
-   //    labels: any;
-   // };
 
+   // interface 
+   import { IGetRegionScoreDetails } from './models/IgetRegionScoreDetails';
 
    const chartOptions = {
       series: [50,50],
@@ -81,8 +70,6 @@
    //    },
    }
 
-
-
    @Component({
    selector: 'app-root',
    templateUrl: './app.component.html',
@@ -99,7 +86,7 @@
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
    ];
    
-   response = [];
+   response: IGetRegionScoreDetails[] = [];
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
@@ -117,7 +104,6 @@
    nextCheckPoint = 0;
    UTC = false;
 
-
    async ngOnInit() {
       const promises = this.fetchURLS.map((url: string) => {
          return this.getData(url);
@@ -130,10 +116,19 @@
          this.error = true;
       }
 
+      this.sortResponse();
       this.setCycle();
       this.calcCycle();
       this.setNextCheckPoint();
       this.setIndexZeroValue();
+   }
+
+   sortResponse(): void {
+      this.response = this.response.sort((a, b) => {
+         if(a.result.regionName > b.result.regionName) { return -1; }
+         if(a.result.regionName < b.result.regionName) { return 1; }
+         return 0;
+      });
    }
 
    getScorePercent(team1: string , team2: string ): string {
@@ -161,16 +156,6 @@
       }
       else {
          this.nextCheckPoint = this.checkpoints.length - 1;
-      }
-      
-   }
-
-   getNextZoneName(index: number): void {
-      if(index + 1 === this.response.length) {
-         return this.response[0].result.regionName
-      }
-      else {
-         return this.response[index + 1].result.regionName
       }
    }
 
@@ -265,7 +250,7 @@
          this.chartOptions.push(chartOptionsClone);
 
          // chart2
-         const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel));
+         const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel)); // deep clone
          
          parsed.result.scoreHistory
          .reverse()
