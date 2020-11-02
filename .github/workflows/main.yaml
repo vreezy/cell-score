@@ -1,0 +1,46 @@
+name: deploy at covid-juelich.vreezy.de
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Setup Node.js for use with actions
+      uses: actions/setup-node@v1.1.0
+      with:
+        # Version Spec of the version to use.  Examples: 10.x, 10.15.1, >=10.15.0, lts
+        version: 12.16.2
+        # Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN
+        # registry-url: # optional
+        # Optional scope for authenticating against scoped registries
+        # scope: # optional
+
+    - name: NPM Install and build
+      run: |
+        npm i @angular/cli@10.2.0
+        npm install
+        ng build --prod --base-href /ingress/cell-score/
+    - name: FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@2.0.0
+      env:
+        # FTP server name (you may need to specify a port)
+        FTP_SERVER: vreezy.de
+        # FTP account username
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        # FTP account password
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        # Protocol used to deploy (ftp or sftp)
+        # method: ftp # optional, default is ftp
+        # The port used to connect to server
+        # port: 21 # optional, default is 21
+        # The local folder to copy, defaults to root project folder
+        LOCAL_DIR: dist/cell-score # optional, default is 
+        # The remote folder to copy to, deafults to root FTP folder (I recommend you configure this on your server side instead of here)
+        # remote_dir: # optional, default is 
+        # Passes through options into lftp
+        ARGS: --delete --verbose # optional, default is 
