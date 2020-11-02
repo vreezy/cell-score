@@ -10,7 +10,7 @@ ng serve
 
 ng build --prod --base-href /ingress/cell-score/
 
-
+## DEVELOP System Information
 Angular CLI: 10.2.0
 Node: 12.16.2
 OS: win32 x64
@@ -34,5 +34,3 @@ Package                         Version
 @schematics/update              0.1002.0
 rxjs                            6.6.3
 typescript                      4.0.5
-
-v12.16.2

@@ -1,4 +1,4 @@
-name: deploy at covid-juelich.vreezy.de
+name: deploy at vreezy.de/ingress/cell-score
 
 on: [push]
 
@@ -22,8 +22,8 @@ jobs:
 
     - name: NPM Install and build
       run: |
-        npm i @angular/cli@10.2.0
-        npm install
+        npm i -g @angular/cli@10.2.0
+        npm install         
         ng build --prod --base-href /ingress/cell-score/
     - name: FTP Deploy
       uses: SamKirkland/FTP-Deploy-Action@2.0.0
