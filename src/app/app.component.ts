@@ -86,7 +86,10 @@
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
    ];
    
+   // Web Service Response
    response: IGetRegionScoreDetails[] = [];
+
+   // chartData
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
@@ -117,17 +120,17 @@
       }
 
       this.sortResponse();
+      this.setChartData();
+
       this.setCycle();
       this.calcCycle();
       this.setNextCheckPoint();
       this.setIndexZeroValue();
 
-      this.refreshAfterCheckPoint()
-
-      
+      this.refreshAfterCheckPoint();      
    }
 
-   refreshAfterCheckPoint() {
+   refreshAfterCheckPoint(): void {
       const refreshDate = new Date();
       refreshDate.setMinutes( refreshDate.getMinutes() + 3 );
 
@@ -158,7 +161,7 @@
       }
    }
 
-   setIndexZeroValue() {
+   setIndexZeroValue(): void {
       if(localStorage.getItem('index')) {
          if(parseInt(localStorage.getItem('index')) < this.response.length) {
             this.index = parseInt(localStorage.getItem('index'));
@@ -255,29 +258,35 @@
 
       if (response.status !== 200) {
          console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
-         return false;
       }
       else {
          const myJson = await response.json();
          const parsed = JSON.parse(myJson);
          this.response.push(parsed);
-         // console.log(parsed);
+         return true;
+      }
+      return false;
+   }
 
-         // chart1
-         const chartOptionsClone = Object.assign({}, chartOptions)
+   setChartData(): void {
+      // Donut Chart with Team Scores
+      this.response.forEach((element :IGetRegionScoreDetails) => {
+         const chartOptionsClone = Object.assign({}, chartOptions);
 
-         chartOptionsClone.series = parsed.result.gameScore
+         chartOptionsClone.series = element.result.gameScore
          .map((element: string): number => {
             return parseInt(element);
          })
          .reverse();
 
          this.chartOptions.push(chartOptionsClone);
+      });      
 
-         // chart2
+      // Mixed Chart with Checkpoint MUs
+      this.response.forEach((element :IGetRegionScoreDetails) => {
          const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel)); // deep clone
          
-         parsed.result.scoreHistory
+         element.result.scoreHistory
          .reverse()
          .forEach((element: string[]) => {
             chartOptionsMixedClone.series[0].data.push(parseInt(element[2]));
@@ -286,7 +295,7 @@
          });
 
          this.chartOptionsMixed.push(chartOptionsMixedClone);
-      }
-      return true;
+      });
+
    }
 }
