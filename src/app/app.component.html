@@ -57,7 +57,8 @@
       <button (click)="switchZone(index)" mat-raised-button >{{ getNextZoneName(index) }}</button>
       <br /> -->
 
-      <h2>Cycle: {{ year }}.{{ cycleDisplay }}</h2>
+      <h2>Cycle: 
+         {{ year }}.{{ cycleDisplay }}</h2>
       Nächster Checkpoint: {{ checkpoints[nextCheckPoint].date }} {{ checkpoints[nextCheckPoint].time }} Uhr<br />
       Letzter Checkpoint: {{ checkpoints[34].date }} {{ checkpoints[34].time }} Uhr<br />
 
@@ -75,7 +76,7 @@
       </mat-grid-list>
 
       <br />
-      <div id="chart">
+      <div id="chart" *ngIf="chartOptionsMixed[index].series[0].data.length > 0 && chartOptionsMixed[index].series[1].data.length > 0">
          <!-- <apx-chart 
             [series]="chartOptions[index].series"
             [chart]="chartOptions[index].chart"
@@ -98,18 +99,25 @@
             [markers]="chartOptionsMixed[index].markers">
          </apx-chart>
 
+         {{chartOptionsMixed[index].series[0].data | json}}
+
       </div>
 
-      <mat-divider></mat-divider>
 
-      <h2>Top-3-Player</h2>
 
-      <mat-grid-list cols="1" rowHeight="30px">
-         <mat-grid-tile *ngFor="let ele of response[index].result.topAgents; index as i" [ngClass]="{'enl' : ele.team === 'ENLIGHTENED', 'res' : ele.team === 'RESISTANCE'}" >
-            {{ ele.nick }}
-         </mat-grid-tile>
+      <div *ngIf="response[index].result.topAgents.length > 0">
 
-      </mat-grid-list>
+         <mat-divider></mat-divider>
+
+         <h2 >Top-3-Player</h2>
+
+         <mat-grid-list cols="1" rowHeight="30px">
+            <mat-grid-tile *ngFor="let ele of response[index].result.topAgents; index as i" [ngClass]="{'enl' : ele.team === 'ENLIGHTENED', 'res' : ele.team === 'RESISTANCE'}" >
+               {{ ele.nick }}
+            </mat-grid-tile>
+         </mat-grid-list>
+      </div>
+
 
    </div>
    <br/>

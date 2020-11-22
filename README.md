@@ -2,13 +2,24 @@
 
 npm install
 
-## SERVE
+## MOCK Server
+
+npm install -g json-server
+json-server --watch mock.json
+
+## SERVE MOCK
 
 ng serve
+
+## SERVE PROD
+
+ng serve --configuration=production
 
 ## BUILD
 
 ng build --prod --base-href /ingress/cell-score/
+
+--configuration=production
 
 ## DEVELOP System Information
 Angular CLI: 10.2.0

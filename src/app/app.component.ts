@@ -1,6 +1,6 @@
    import { Component } from '@angular/core';
    import * as moment from 'moment';
-
+   import {environment} from '../environments/environment';
 
    // interface 
    import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
@@ -80,10 +80,15 @@
 
    loading = true;
    error = false;
-   fetchURLS = [
+   fetchURLS_PROD = [
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
       "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
+   ];
+
+   fetchURLS_DEV = [
+      "http://localhost:3000/empty",
+      "http://localhost:3000/filled"
    ];
    
    // Web Service Response
@@ -108,7 +113,11 @@
    UTC = false;
 
    async ngOnInit() {
-      const promises = this.fetchURLS.map((url: string) => {
+      var fetchURLS = this.fetchURLS_DEV;
+      if(environment.production) {
+         fetchURLS = this.fetchURLS_PROD;
+      }
+      const promises = fetchURLS.map((url: string) => {
          return this.getData(url);
       })
       const results = await Promise.all(promises);
@@ -146,8 +155,12 @@
       });
    }
 
+   
    getScorePercent(team1: string , team2: string ): string {
       const total: number = parseInt(team1) + parseInt(team2);
+      if(total < 1) {
+         return "0";
+      }
       const totalPercent = 100 / total;
       return (totalPercent * parseInt(team1)).toFixed(2).replace('.', ',');
    }
@@ -260,13 +273,25 @@
          console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
       }
       else {
-         const myJson = await response.json();
-         const parsed = JSON.parse(myJson);
-         this.response.push(parsed);
+         var myJson = await response.json();
+         if(this.IsJsonString(myJson)){
+            myJson = JSON.parse(myJson);
+         }
+         
+         this.response.push(myJson);
          return true;
       }
       return false;
    }
+
+   IsJsonString(str) {
+      try {
+          JSON.parse(str);
+      } catch (e) {
+          return false;
+      }
+      return true;
+  }
 
    setChartData(): void {
       // Donut Chart with Team Scores
