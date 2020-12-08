@@ -1,6 +1,11 @@
 name: deploy at vreezy.de/ingress/cell-score
 
-on: [push]
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:    
+      # Push events on main branch
+      - main
 
 jobs:
   build:
