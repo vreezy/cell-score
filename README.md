@@ -21,6 +21,9 @@ ng build --prod --base-href /ingress/cell-score/
 
 --configuration=production
 
+## NG TEST
+works now!
+
 ## DEVELOP System Information
 Angular CLI: 10.2.0
 Node: 12.16.2
