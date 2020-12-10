@@ -60,7 +60,18 @@ export class CycleService {
       date.setTime(date.getTime() + Constants.CHECKPOINT_LENGTH);
    }
 
-   // on 8.12.20 (dd.mm.yy) returns 12128
+
+
+   // returns Date with Start of current Cycle
+   // if cycle is empty it returns current cycle start date
+   getCycleStartDate(cycle = this.getCycle()): Date {
+      var now = new Date();
+      now.setTime(Constants.EPOCH + (cycle * Constants.CYCLE_LENGTH));
+      return now;
+   }
+
+   // Based on the first Cycle in ingress (2014)
+   // if Date is empty it returns current
    getCycle(date = new Date()): number {
       return Math.floor((date.getTime() - Constants.EPOCH) / Constants.CYCLE_LENGTH);
    }

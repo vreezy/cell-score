@@ -80,6 +80,7 @@
    export class AppComponent {
       //  @ViewChild("chart") chart: ChartComponent;
 
+   title = "cell-score";
    loading = true;
    error = false;
    fetchURLS_PROD = [
