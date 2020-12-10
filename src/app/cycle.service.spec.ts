@@ -4,34 +4,49 @@ import { CycleService } from './cycle.service';
 import * as Constants from './constants';
 
 describe('CycleService', () => {
-  let service: CycleService;
+   let service: CycleService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(CycleService);
-  });
+   beforeEach(() => {
+      TestBed.configureTestingModule({});
+      service = TestBed.inject(CycleService);
+   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+   it('should be created', () => {
+      expect(service).toBeTruthy();
+   });
 
-  it('getCycle -1', () => {
-    expect(service.getCycle(new Date("January 8, 2014 03:00:00"))).toBe(-1);
-  });
+   it('getCycle -1', () => {
+      expect(service.getCycle(new Date("January 8, 2014 03:00:00"))).toBe(-1);
+   });
 
-  it('getCycle First Cycle ever we start with 0', () => {
-    expect(service.getCycle(new Date("January 8, 2014 04:00:00"))).toBe(0);
-  });
+   it('getCycle First Cycle ever we start with 0', () => {
+      expect(service.getCycle(new Date("January 8, 2014 04:00:00"))).toBe(0);
+   });
 
-  it('getCycle Second Cycle should be 1', () => {
-    const zero = new Date("January 8, 2014 04:00:00");
-    zero.setTime(zero.getTime() + Constants.CYCLE_LENGTH);
-    expect(service.getCycle(zero)).toBe(1);
-  });
+   it('getCycle Second Cycle should be 1', () => {
+      const zero = new Date("January 8, 2014 04:00:00");
+      zero.setTime(zero.getTime() + Constants.CYCLE_LENGTH);
+      expect(service.getCycle(zero)).toBe(1);
+   });
 
-  it('getCycle on December 8, 2020 12:00:00', () => {
-    expect(service.getCycle(new Date("December 8, 2020 12:00:00"))).toBe(346);
-  });
+   it('getCycle on December 8, 2020 12:00:00', () => {
+      expect(service.getCycle(new Date("December 8, 2020 12:00:00"))).toBe(346);
+   });
+
+   it('getCheckpoint Array Length -> there are 35 Checkpoints', () => {
+      expect(service.getCheckpoints().length).toBe(35);
+   });
+
+   it('getCheckpoint only one is current', () => {
+      const checkpoints = service.getCheckpoints()
+      var count = 0;
+      checkpoints.forEach((cp) => {
+         if(cp.isCurrent) {
+            count++;
+         }
+      })
+      expect(count).toBe(1);
+   });
 
   // it('nextCheckPointInMS is not binger than xxx', () => {
   //   expect(service.nextCheckPointInMS(new Date())).toBeLessThanOrEqual(18000000);

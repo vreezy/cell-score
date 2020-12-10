@@ -3,6 +3,7 @@
    import {environment} from '../environments/environment';
    import * as Constants from './constants';
    
+   import {CycleService} from './cycle.service';
 
    // interface 
    import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
@@ -73,11 +74,12 @@
    }
 
    @Component({
-   selector: 'app-root',
-   templateUrl: './app.component.html',
-   styleUrls: ['./app.component.scss']
+      selector: 'app-root',
+      templateUrl: './app.component.html',
+      styleUrls: ['./app.component.scss'],
    })
    export class AppComponent {
+      
       //  @ViewChild("chart") chart: ChartComponent;
 
    title = "cell-score";
@@ -97,6 +99,9 @@
    // Web Service Response
    response: IGetRegionScoreDetails[] = [];
 
+   // Cycle Service
+   checkpoints: any[] = []
+
    // chartData
    chartOptions = [];
    chartOptionsMixed = [];
@@ -108,12 +113,17 @@
    currentCycle = 0;
    cycleDisplay = 0;
    year = 0;
-   checkpoints = [];
+   
    currentCheckPoint = 0;
    nextCheckPoint = 0;
    UTC = false;
 
+   constructor(private cycleService: CycleService) {}
+
+   
    async ngOnInit() {
+      this.checkpoints = this.cycleService.getCheckpoints();
+
       var fetchURLS = this.fetchURLS_DEV;
       if(environment.production) {
          fetchURLS = this.fetchURLS_PROD;
