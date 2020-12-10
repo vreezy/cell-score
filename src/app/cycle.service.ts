@@ -24,7 +24,8 @@ export class CycleService {
       var now = new Date();
       var then = new Date();
       then.setTime(Constants.EPOCH + (cycle * Constants.CYCLE_LENGTH));
-      then.setTime(this.nextCheckPointInMS(then)); // No measurement is taken until the first checkpoint after rollover.
+      this.addCheckPoint(then);
+      // then.setTime(this.nextCheckPointInMS(then)); // No measurement is taken until the first checkpoint after rollover.
       // var year: number = parseInt(this.formatDate(start, 'YYYY'));
       // var cycleDisplay = cycle + 1;
       
@@ -40,7 +41,8 @@ export class CycleService {
                currentCheckPoint: this.isCurrentCheckPoint(now, then)
             };
 
-            then.setTime(this.nextCheckPointInMS(then));
+            this.addCheckPoint(then);
+           
 
 
       }
@@ -48,13 +50,14 @@ export class CycleService {
    }
 
    isCurrentCheckPoint(now: Date, then: Date) {
-      if(now.getTime() > then.getTime() && now.getTime() < this.nextCheckPointInMS(then)) {
+      if(now.getTime() > then.getTime() && now.getTime() < then.getTime() + Constants.CHECKPOINT_LENGTH) {
          return true;
       }
       return false
    }
-   nextCheckPointInMS(time: Date) {
-      return time.getTime() + Constants.CHECKPOINT_LENGTH;
+
+   addCheckPoint(date: Date) {
+      date.setTime(date.getTime() + Constants.CHECKPOINT_LENGTH);
    }
 
    // on 8.12.20 (dd.mm.yy) returns 12128
