@@ -37,16 +37,16 @@ describe('CycleService', () => {
       expect(service.getCheckpoints().length).toBe(35);
    });
 
-   it('getCheckpoint only one is current', () => {
-      const checkpoints = service.getCheckpoints()
-      var count = 0;
-      checkpoints.forEach((cp) => {
-         if(cp.isCurrent) {
-            count++;
-         }
-      })
-      expect(count).toBe(1);
-   });
+   // it('getCheckpoint only one is current', () => {
+   //    const checkpoints = service.getCheckpoints()
+   //    var count = 0;
+   //    checkpoints.forEach((cp) => {
+   //       if(cp.isCurrent) {
+   //          count++;
+   //       }
+   //    })
+   //    expect(count).toBe(1);
+   // });
 
   // it('nextCheckPointInMS is not binger than xxx', () => {
   //   expect(service.nextCheckPointInMS(new Date())).toBeLessThanOrEqual(18000000);

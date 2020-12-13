@@ -1,13 +1,12 @@
    import { Component } from '@angular/core';
    import * as moment from 'moment';
-   import { environment } from '../environments/environment';
-
-   //Services
-   import { CycleService } from './cycle.service';
+   import {environment} from '../environments/environment';
+   import * as Constants from './constants';
+   
+   import {CycleService} from './cycle.service';
 
    // interface 
    import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
-   import { ICheckpoint } from './ICheckpoint';
 
    const chartOptions = {
       series: [50,50],
@@ -75,47 +74,60 @@
    }
 
    @Component({
-   selector: 'app-root',
-   templateUrl: './app.component.html',
-   styleUrls: ['./app.component.scss']
+      selector: 'app-root',
+      templateUrl: './app.component.html',
+      styleUrls: ['./app.component.scss'],
    })
    export class AppComponent {
       
-   constructor(private cycleService: CycleService) {}
       //  @ViewChild("chart") chart: ChartComponent;
 
+   title = "cell-score";
    loading = true;
    error = false;
+   fetchURLS_PROD = [
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
+   ];
+
+   fetchURLS_DEV = [
+      "http://localhost:3000/empty",
+      "http://localhost:3000/filled"
+   ];
    
    // Web Service Response
    response: IGetRegionScoreDetails[] = [];
+
+   // Cycle Service
+   checkpoints: any[] = []
 
    // chartData
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
    indexZeroValue = "xxx";
-   
-   // Cycle Service Data
-   checkpoints: ICheckpoint[] = [];
-   currentCheckpoint: ICheckpoint = null;
+
+
    cycle = 0;
+   currentCycle = 0;
    cycleDisplay = 0;
    year = 0;
+   
+   currentCheckPoint = 0;
+   nextCheckPoint = 0;
+   UTC = false;
 
+   constructor(private cycleService: CycleService) {}
+
+   
    async ngOnInit() {
-      // Cycle INIT
-      this.checkpoints = this.getCheckPoints();
-      this.currentCheckpoint = this.getCurrentCheckpoint();
-      this.cycle = this.getCycle();
-      this.cycleDisplay = this.getCycleDisplay();
-      this.year = new Date().getFullYear()
+      this.checkpoints = this.cycleService.getCheckpoints();
 
-      // Data Init
-      // TODO
-
-      const fetchURLS = environment.fetchURLS;
-
+      var fetchURLS = this.fetchURLS_DEV;
+      if(environment.production) {
+         fetchURLS = this.fetchURLS_PROD;
+      }
       const promises = fetchURLS.map((url: string) => {
          return this.getData(url);
       })
@@ -130,34 +142,23 @@
       this.sortResponse();
       this.setChartData();
 
+      // TODO use CYCLE SERVICE this.cycle = Cycle.getCycle();
+
+      // TODO use CYCLE SERVICE this.calcCycle();
+
+
+      this.setNextCheckPoint();
       this.setIndexZeroValue();
 
-      this.reloadPageAfterCheckPoint();      
+      this.refreshAfterCheckPoint();      
    }
 
-   // Cycle Service
-   getCheckPoints(): ICheckpoint[] {
-      return this.cycleService.getCheckpoints();
-   }
+   refreshAfterCheckPoint(): void {
+      const refreshDate = new Date();
+      refreshDate.setMinutes( refreshDate.getMinutes() + 3 );
 
-   getCurrentCheckpoint(): ICheckpoint {
-      return this.cycleService.getCurrentCheckpoint();
-   }
-
-   getCycle(): number {
-      return this.cycleService.getCycle();
-   }
-
-   getCycleDisplay(): number {
-      return this.cycleService.getCycleDisplay()
-   }
-
-   // Other
-   reloadPageAfterCheckPoint(): void {
-      if(this.currentCheckpoint && this.currentCheckpoint.date && this.currentCheckpoint.date instanceof Date) {
-         const refresinMS = this.currentCheckpoint.date.getTime() + 180000;
-         window.setInterval('window.location.reload()', refresinMS);
-      }
+      const refreshMilliSeconds = this.checkpoints[this.nextCheckPoint].getTime - refreshDate.getTime();
+      window.setInterval('window.location.reload()', refreshMilliSeconds)
    }
 
    sortResponse(): void {
@@ -202,11 +203,27 @@
       }
    }
 
+   setNextCheckPoint(): void {
+      if (this.currentCheckPoint + 1 < this.checkpoints.length) {
+         this.nextCheckPoint = this.currentCheckPoint + 1;
+      }
+      else {
+         this.nextCheckPoint = this.checkpoints.length - 1;
+      }
+   }
+
+
+
+   isNext(start, now) {
+      return (start.getTime() > now && (now + Constants.CHECKPOINT_LENGTH) > start.getTime());
+   }
 
    changeIndex(index: number) {
       this.index = index;
       localStorage.setItem('index', index.toString());
    }
+
+
 
    async getData(url: string): Promise<boolean> {
       const response = await fetch(url);
