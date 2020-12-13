@@ -1,12 +1,13 @@
    import { Component } from '@angular/core';
-   import * as moment from 'moment';
+   // import * as moment from 'moment';
    import { environment } from '../environments/environment';
 
-   //Services
+   // Services
    import { CycleService } from './cycle.service';
+   import { BackendService } from './backend.service';
 
-   // interface 
-   import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
+   // Interfaces
+   import { IGetRegionScoreDetails } from './IGetRegionScoreDetails'; // TODO
    import { ICheckpoint } from './ICheckpoint';
 
    const chartOptions = {
@@ -75,20 +76,17 @@
    }
 
    @Component({
-   selector: 'app-root',
-   templateUrl: './app.component.html',
-   styleUrls: ['./app.component.scss']
+      selector: 'app-root',
+      templateUrl: './app.component.html',
+      styleUrls: ['./app.component.scss']
    })
    export class AppComponent {
       
-   constructor(private cycleService: CycleService) {}
-      //  @ViewChild("chart") chart: ChartComponent;
+   constructor(private cycleService: CycleService, private backendService: BackendService) {}
 
+   // Component Basis
    loading = true;
    error = false;
-   
-   // Web Service Response
-   response: IGetRegionScoreDetails[] = [];
 
    // chartData
    chartOptions = [];
@@ -103,36 +101,35 @@
    cycleDisplay = 0;
    year = 0;
 
+   // Backend Service Data
+   response: IGetRegionScoreDetails[] = [];
+
    async ngOnInit() {
-      // Cycle INIT
+      // Cycle Service INIT
       this.checkpoints = this.getCheckPoints();
       this.currentCheckpoint = this.getCurrentCheckpoint();
       this.cycle = this.getCycle();
       this.cycleDisplay = this.getCycleDisplay();
       this.year = new Date().getFullYear()
 
-      // Data Init
-      // TODO
-
+      // Backend Service Init
       const fetchURLS = environment.fetchURLS;
 
       const promises = fetchURLS.map((url: string) => {
          return this.getData(url);
-      })
-      const results = await Promise.all(promises);
-            
-      if(results.every((result:boolean) => { return result})) {
-         this.loading = false;
-      } else {
-         this.error = true;
-      }
+      });
 
+      this.response = await Promise.all(promises);
+            
+      // Chart Setup
       this.sortResponse();
       this.setChartData();
-
       this.setIndexZeroValue();
 
-      this.reloadPageAfterCheckPoint();      
+      // Auto Reaload PAge after Checkpoint
+      this.reloadPageAfterCheckPoint();  
+      
+      this.loading = false;
    }
 
    // Cycle Service
@@ -150,6 +147,11 @@
 
    getCycleDisplay(): number {
       return this.cycleService.getCycleDisplay()
+   }
+
+   // Data Service
+   getData(url: string): any {
+      return this.backendService.getData(url);
    }
 
    // Other
@@ -208,32 +210,8 @@
       localStorage.setItem('index', index.toString());
    }
 
-   async getData(url: string): Promise<boolean> {
-      const response = await fetch(url);
 
-      if (response.status !== 200) {
-         console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
-      }
-      else {
-         var myJson = await response.json();
-         if(this.IsJsonString(myJson)){
-            myJson = JSON.parse(myJson);
-         }
-         
-         this.response.push(myJson);
-         return true;
-      }
-      return false;
-   }
 
-   IsJsonString(str) {
-      try {
-          JSON.parse(str);
-      } catch (e) {
-          return false;
-      }
-      return true;
-  }
 
    setChartData(): void {
       // Donut Chart with Team Scores
