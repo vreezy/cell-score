@@ -120,6 +120,7 @@
       });
 
       this.response = await Promise.all(promises);
+      // TODO check for null and set error if one is null
             
       // Chart Setup
       this.sortResponse();

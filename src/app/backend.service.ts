@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,7 +18,7 @@ export class BackendService {
          if(this.IsJsonString(myJson)){
             myJson = JSON.parse(myJson);
          }
-         
+         // TODO check for each property!         
          return myJson;
       }
       return null;
