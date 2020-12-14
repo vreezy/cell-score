@@ -1,14 +1,12 @@
    import { Component } from '@angular/core';
-   // import * as moment from 'moment';
-   import { environment } from '../environments/environment';
+   import * as moment from 'moment';
+   import {environment} from '../environments/environment';
+   import * as Constants from './constants';
+   
+   import {CycleService} from './cycle.service';
 
-   // Services
-   import { CycleService } from './cycle.service';
-   import { BackendService } from './backend.service';
-
-   // Interfaces
-   import { IGetRegionScoreDetails } from './IGetRegionScoreDetails'; // TODO
-   import { ICheckpoint } from './ICheckpoint';
+   // interface 
+   import { IGetRegionScoreDetails } from './IGetRegionScoreDetails';
 
    const chartOptions = {
       series: [50,50],
@@ -78,81 +76,98 @@
    @Component({
       selector: 'app-root',
       templateUrl: './app.component.html',
-      styleUrls: ['./app.component.scss']
+      styleUrls: ['./app.component.scss'],
    })
    export class AppComponent {
       
-   constructor(private cycleService: CycleService, private backendService: BackendService) {}
+      //  @ViewChild("chart") chart: ChartComponent;
 
-   // Component Basis
+   title = "cell-score";
    loading = true;
    error = false;
+   fetchURLS_PROD = [
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
+      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
+   ];
+
+   fetchURLS_DEV = [
+      "http://localhost:3000/empty",
+      "http://localhost:3000/filled"
+   ];
+   
+   // Web Service Response
+   response: IGetRegionScoreDetails[] = [];
+
+   // Cycle Service
+   checkpoints: any[] = []
 
    // chartData
    chartOptions = [];
    chartOptionsMixed = [];
    index = 0;
    indexZeroValue = "xxx";
-   
-   // Cycle Service Data
-   checkpoints: ICheckpoint[] = [];
-   currentCheckpoint: ICheckpoint = null;
+
+
    cycle = 0;
+   currentCycle = 0;
    cycleDisplay = 0;
    year = 0;
+   
+   currentCheckPoint = 0;
+   nextCheckPoint = 0;
+   UTC = false;
 
-   // Backend Service Data
-   response: IGetRegionScoreDetails[] = [];
-
-   async ngOnInit() {
-      // Cycle Service INIT
-      this.checkpoints = this.getCheckPoints();
-      this.currentCheckpoint = this.getCurrentCheckpoint();
-      this.cycle = this.getCycle();
-      this.cycleDisplay = this.getCycleDisplay();
-      this.year = new Date().getFullYear()
-
-      // Backend Service Init
-      this.response = await this.getAllData(environment.urls);
-
-      // Chart Setup
-      this.setChartData();
-      this.setIndexZeroValue();
-
-      // Auto Reaload PAge after Checkpoint
-      this.reloadPageAfterCheckPoint();  
-      
-      this.loading = false;
-   }
-
-   // Cycle Service
-   getCheckPoints(): ICheckpoint[] {
-      return this.cycleService.getCheckpoints();
-   }
-
-   getCurrentCheckpoint(): ICheckpoint {
-      return this.cycleService.getCurrentCheckpoint();
-   }
-
-   getCycle(): number {
-      return this.cycleService.getCycle();
-   }
-
-   getCycleDisplay(): number {
-      return this.cycleService.getCycleDisplay()
-   }
-
-   // Data Service
-   // async getData(url: string): Promise<any> {
-   //    return await this.backendService.getData(url);
-   // }
-
-   async getAllData(urls: string[]): Promise<any[]> {
-      return await this.backendService.getAllData(urls);
-   }
+   constructor(private cycleService: CycleService) {}
 
    
-   // Chart Helper
+   async ngOnInit() {
+      this.checkpoints = this.cycleService.getCheckpoints();
+
+      var fetchURLS = this.fetchURLS_DEV;
+      if(environment.production) {
+         fetchURLS = this.fetchURLS_PROD;
+      }
+      const promises = fetchURLS.map((url: string) => {
+         return this.getData(url);
+      })
+      const results = await Promise.all(promises);
+            
+      if(results.every((result:boolean) => { return result})) {
+         this.loading = false;
+      } else {
+         this.error = true;
+      }
+
+      this.sortResponse();
+      this.setChartData();
+
+      // TODO use CYCLE SERVICE this.cycle = Cycle.getCycle();
+
+      // TODO use CYCLE SERVICE this.calcCycle();
+
+
+      this.setNextCheckPoint();
+      this.setIndexZeroValue();
+
+      this.refreshAfterCheckPoint();      
+   }
+
+   refreshAfterCheckPoint(): void {
+      const refreshDate = new Date();
+      refreshDate.setMinutes( refreshDate.getMinutes() + 3 );
+
+      const refreshMilliSeconds = this.checkpoints[this.nextCheckPoint].getTime - refreshDate.getTime();
+      window.setInterval('window.location.reload()', refreshMilliSeconds)
+   }
+
+   sortResponse(): void {
+      this.response = this.response.sort((a, b) => {
+         if(a.result.regionName > b.result.regionName) { return -1; }
+         if(a.result.regionName < b.result.regionName) { return 1; }
+         return 0;
+      });
+   }
 
    
    getScorePercent(team1: string , team2: string ): string {
@@ -188,6 +203,21 @@
       }
    }
 
+   setNextCheckPoint(): void {
+      if (this.currentCheckPoint + 1 < this.checkpoints.length) {
+         this.nextCheckPoint = this.currentCheckPoint + 1;
+      }
+      else {
+         this.nextCheckPoint = this.checkpoints.length - 1;
+      }
+   }
+
+
+
+   isNext(start, now) {
+      return (start.getTime() > now && (now + Constants.CHECKPOINT_LENGTH) > start.getTime());
+   }
+
    changeIndex(index: number) {
       this.index = index;
       localStorage.setItem('index', index.toString());
@@ -195,6 +225,32 @@
 
 
 
+   async getData(url: string): Promise<boolean> {
+      const response = await fetch(url);
+
+      if (response.status !== 200) {
+         console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
+      }
+      else {
+         var myJson = await response.json();
+         if(this.IsJsonString(myJson)){
+            myJson = JSON.parse(myJson);
+         }
+         
+         this.response.push(myJson);
+         return true;
+      }
+      return false;
+   }
+
+   IsJsonString(str) {
+      try {
+          JSON.parse(str);
+      } catch (e) {
+          return false;
+      }
+      return true;
+  }
 
    setChartData(): void {
       // Donut Chart with Team Scores
@@ -211,32 +267,19 @@
       });      
 
       // Mixed Chart with Checkpoint MUs
-
       this.response.forEach((element :IGetRegionScoreDetails) => {
          const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel)); // deep clone
          
-         var count = 0;
          element.result.scoreHistory
          .reverse()
          .forEach((element: string[]) => {
             chartOptionsMixedClone.series[0].data.push(parseInt(element[2]));
             chartOptionsMixedClone.series[1].data.push(parseInt(element[1]));
-            chartOptionsMixedClone.xaxis.categories.push(element[0] + ". " + this.checkpoints[count].localeDate + " " + this.checkpoints[count].localeTime);
-            count++;
+            chartOptionsMixedClone.xaxis.categories.push(element[0]);
          });
 
          this.chartOptionsMixed.push(chartOptionsMixedClone);
-
       });
 
-   }
-
-
-   // Other
-   reloadPageAfterCheckPoint(): void {
-      if(this.currentCheckpoint && this.currentCheckpoint.date && this.currentCheckpoint.date instanceof Date) {
-         const refresinMS = this.currentCheckpoint.date.getTime() + 180000;
-         window.setInterval('window.location.reload()', refresinMS);
-      }
    }
 }
