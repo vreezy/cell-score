@@ -7,6 +7,18 @@ export class BackendService {
 
    constructor() { }
 
+   async getAllData(urls: string[]): Promise<any[]> {
+      const promises = urls.map((url: string) => {
+         return this.getData(url);
+      });
+
+      var response = await Promise.all(promises);
+      this.removeNull(response);
+      this.sortData(response);
+
+      return response;
+   }
+
    async getData(url: string): Promise<any> {
       const response = await fetch(url);
 
@@ -14,12 +26,11 @@ export class BackendService {
          console.log('Looks like there was a problem. URL: ' + url + ' Status Code: ' + response.status);
       }
       else {
-         var myJson = await response.json();
-         if(this.IsJsonString(myJson)){
-            myJson = JSON.parse(myJson);
+         var obj = await response.json();
+         if(this.IsJsonString(obj)){
+            obj = JSON.parse(obj);
          }
-         // TODO check for each property!         
-         return myJson;
+         return obj;
       }
       return null;
    }
@@ -32,5 +43,22 @@ export class BackendService {
           return false;
       }
       return true;
+   }
+
+   private removeNull(ary: any[]): void {
+      ary.filter((obj: any) => {
+         if(obj) {
+            return true;
+         }
+         return false;
+      });
+   }
+
+   private sortData(ary: any[]): void {
+      ary.sort((a, b) => {
+         if(a.result.regionName < b.result.regionName) { return -1; }
+         if(a.result.regionName > b.result.regionName) { return 1; }
+         return 0;
+      });
    }
 }

@@ -113,17 +113,9 @@
       this.year = new Date().getFullYear()
 
       // Backend Service Init
-      const fetchURLS = environment.fetchURLS;
+      this.response = await this.getAllData(environment.urls);
 
-      const promises = fetchURLS.map((url: string) => {
-         return this.getData(url);
-      });
-
-      this.response = await Promise.all(promises);
-      // TODO check for null and set error if one is null
-            
       // Chart Setup
-      this.sortResponse();
       this.setChartData();
       this.setIndexZeroValue();
 
@@ -151,25 +143,16 @@
    }
 
    // Data Service
-   getData(url: string): any {
-      return this.backendService.getData(url);
+   // async getData(url: string): Promise<any> {
+   //    return await this.backendService.getData(url);
+   // }
+
+   async getAllData(urls: string[]): Promise<any[]> {
+      return await this.backendService.getAllData(urls);
    }
 
-   // Other
-   reloadPageAfterCheckPoint(): void {
-      if(this.currentCheckpoint && this.currentCheckpoint.date && this.currentCheckpoint.date instanceof Date) {
-         const refresinMS = this.currentCheckpoint.date.getTime() + 180000;
-         window.setInterval('window.location.reload()', refresinMS);
-      }
-   }
-
-   sortResponse(): void {
-      this.response = this.response.sort((a, b) => {
-         if(a.result.regionName > b.result.regionName) { return -1; }
-         if(a.result.regionName < b.result.regionName) { return 1; }
-         return 0;
-      });
-   }
+   
+   // Chart Helper
 
    
    getScorePercent(team1: string , team2: string ): string {
@@ -205,7 +188,6 @@
       }
    }
 
-
    changeIndex(index: number) {
       this.index = index;
       localStorage.setItem('index', index.toString());
@@ -229,19 +211,32 @@
       });      
 
       // Mixed Chart with Checkpoint MUs
+
       this.response.forEach((element :IGetRegionScoreDetails) => {
          const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel)); // deep clone
          
+         var count = 0;
          element.result.scoreHistory
          .reverse()
          .forEach((element: string[]) => {
             chartOptionsMixedClone.series[0].data.push(parseInt(element[2]));
             chartOptionsMixedClone.series[1].data.push(parseInt(element[1]));
-            chartOptionsMixedClone.xaxis.categories.push(element[0]);
+            chartOptionsMixedClone.xaxis.categories.push(element[0] + ". " + this.checkpoints[count].localeDate + " " + this.checkpoints[count].localeTime);
+            count++;
          });
 
          this.chartOptionsMixed.push(chartOptionsMixedClone);
+
       });
 
+   }
+
+
+   // Other
+   reloadPageAfterCheckPoint(): void {
+      if(this.currentCheckpoint && this.currentCheckpoint.date && this.currentCheckpoint.date instanceof Date) {
+         const refresinMS = this.currentCheckpoint.date.getTime() + 180000;
+         window.setInterval('window.location.reload()', refresinMS);
+      }
    }
 }
