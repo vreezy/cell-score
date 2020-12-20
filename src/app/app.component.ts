@@ -120,7 +120,7 @@
       this.setIndexZeroValue();
 
       // Auto Reaload PAge after Checkpoint
-      this.reloadPageAfterCheckPoint();  
+      //this.reloadPageAfterCheckPoint();  
       
       this.loading = false;
    }
