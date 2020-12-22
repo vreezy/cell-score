@@ -17,6 +17,7 @@
       width: 100%;
       text-align: center; 
       vertical-align: middle;
+      table-layout: fixed
    }
 
 
@@ -81,23 +82,25 @@
       <table>
          <tr>
             <th>septicycl</th>
+            <th>Current CP ({{ currentCheckpoint.cp }})</th>
             <th>cycle</th>
          </tr>
          <tr>
             <td>{{ year }}.{{ cycleDisplay }}</td>
+            <td>{{ currentCheckpoint.localeDate}} {{  currentCheckpoint.localeTime }}</td>
             <td>{{ cycle }}</td>
          </tr>
       </table>
 
       <table>
          <tr>
-            <th>Start</th>
-            <th>Current ({{ currentCheckpoint.cp }})</th>
-            <th>Last</th>
+            <th>Cycle Start</th>
+            <th>Next CP</th>
+            <th>Last CP</th>
          </tr>
          <tr>
             <td>{{ checkpoints[0].localeDate }} {{ checkpoints[0].localeTime }}</td>
-            <td>{{ currentCheckpoint.localeDate}} {{  currentCheckpoint.localeTime }}</td>
+            <td>{{ getNextCheckpointDate().toLocaleDateString() }} {{ getNextCheckpointDate().toLocaleTimeString() }}</td>
             <td>{{ checkpoints[34].localeDate }} {{ checkpoints[34].localeTime }}</td>
          </tr>
       </table>
