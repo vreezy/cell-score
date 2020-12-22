@@ -126,6 +126,10 @@
    }
 
    // Cycle Service
+   getNextCheckpointDate(): Date {
+      return this.cycleService.getNextCheckpointDate();
+   }
+   
    getCheckPoints(): ICheckpoint[] {
       return this.cycleService.getCheckpoints();
    }

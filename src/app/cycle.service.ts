@@ -15,6 +15,13 @@ import { ICheckpoint } from './ICheckpoint';
 export class CycleService {
 
    constructor() { }
+   public getNextCheckpointDate(currentcp = this.getCurrentCheckpoint()): Date {
+      const date = new Date();
+      date.setTime(currentcp.date.getTime() + Constants.CHECKPOINT_LENGTH);
+      return date;
+
+   }
+
    public getCurrentCheckpoint(checkpoints = this.getCheckpoints()): ICheckpoint {
       const now = new Date();
       for (var i = 0; i < checkpoints.length; i++) {
@@ -77,7 +84,7 @@ export class CycleService {
       return false
    }
 
-   private addCheckPoint(date: Date) {
+   private addCheckPoint(date: Date): void {
       date.setTime(date.getTime() + Constants.CHECKPOINT_LENGTH);
    }
 
