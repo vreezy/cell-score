@@ -242,7 +242,7 @@
    }
 
    isOutOfDate(): boolean {
-      const result = this.response[this.index].result.scoreHistory.length < this.getCurrentCheckpoint().cp + 1
+      const result = this.response[this.index].result.scoreHistory.length < this.getCurrentCheckpoint().cp;
       if(!environment.production) {
          console.log("isOutOfDate: " + result);
       }
