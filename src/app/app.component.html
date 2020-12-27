@@ -163,6 +163,9 @@
          </mat-grid-list>
       </div>
 
+      <ngb-alert *ngIf="isOutOfDate()" [dismissible]="true">
+         <strong>Warning!</strong> Data might be out of date (new data is loaded 2 min after checkpoint!).
+      </ngb-alert>
 
    </div>
    <br/>
