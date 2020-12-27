@@ -82,13 +82,13 @@
       <table>
          <tr>
             <th>septicycl</th>
-            <th>Current CP ({{ currentCheckpoint.cp }})</th>
+            <th>Current CP ({{ getCurrentCheckpoint().cp }})</th>
             <th>cycle</th>
          </tr>
          <tr>
-            <td>{{ year }}.{{ cycleDisplay }}</td>
-            <td>{{ currentCheckpoint.localeDate}} {{  currentCheckpoint.localeTime }}</td>
-            <td>{{ cycle }}</td>
+            <td>{{ year }}.{{ getCycleDisplay() }}</td>
+            <td>{{ getLocaleDateString(getCurrentCheckpoint().date)}} {{ getLocaleTimeString(getCurrentCheckpoint().date) }}</td>
+            <td>{{ getCycle() }}</td>
          </tr>
       </table>
 
@@ -99,9 +99,9 @@
             <th>Last CP</th>
          </tr>
          <tr>
-            <td>{{ checkpoints[0].localeDate }} {{ checkpoints[0].localeTime }}</td>
-            <td>{{ getNextCheckpointDate().toLocaleDateString() }} {{ getNextCheckpointDate().toLocaleTimeString() }}</td>
-            <td>{{ checkpoints[34].localeDate }} {{ checkpoints[34].localeTime }}</td>
+            <td>{{ getLocaleDateString(getCheckPoints()[0].date) }} {{ getLocaleTimeString(getCheckPoints()[0].date) }}</td>
+            <td>{{ getLocaleDateString(getNextCheckpointDate()) }} {{ getLocaleTimeString(getNextCheckpointDate()) }}</td>
+            <td>{{ getLocaleDateString(getCheckPoints()[35].date) }} {{ getLocaleTimeString(getCheckPoints()[35].date) }}</td>
          </tr>
       </table>
 
@@ -117,6 +117,10 @@
             RES: {{ response[index].result.gameScore[1] }} ({{ getScorePercent(response[index].result.gameScore[1], response[index].result.gameScore[0])}}%)
          </mat-grid-tile>
       </mat-grid-list>
+
+      <!-- <div *ngIf="getCurrentCheckpoint().cp < 1">
+         All Data is Reseted because of a new Cycle!
+      </div> -->
 
       <br />
       <div id="chart" *ngIf="chartOptionsMixed[index].series[0].data.length > 0 && chartOptionsMixed[index].series[1].data.length > 0">

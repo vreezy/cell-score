@@ -1,6 +1,6 @@
 export interface ICheckpoint {
    cp: number
-   localeDate: string;
-   localeTime: string;
+   // localeDate: string;
+   // localeTime: string;
    date: Date;
 }
