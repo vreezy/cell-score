@@ -59,11 +59,6 @@ export class CycleService {
          };
          this.addCheckPoint(date);
       }
-      if(!environment.production) {
-         console.log("cycleService - getCheckpoints");
-         console.log(checkpoints);
-      }
-      
       return checkpoints;
    }
 
