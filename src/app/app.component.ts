@@ -99,18 +99,18 @@
    currentCheckpoint: ICheckpoint = null;
    cycle = 0;
    cycleDisplay = 0;
-   year = 0;
+   year = new Date().getFullYear();
 
    // Backend Service Data
    response: IGetRegionScoreDetails[] = [];
 
    async ngOnInit() {
       // Cycle Service INIT
-      this.checkpoints = this.getCheckPoints();
-      this.currentCheckpoint = this.getCurrentCheckpoint();
-      this.cycle = this.getCycle();
-      this.cycleDisplay = this.getCycleDisplay();
-      this.year = new Date().getFullYear()
+      // this.checkpoints = this.getCheckPoints();
+      // this.currentCheckpoint = this.getCurrentCheckpoint();
+      // this.cycle = this.getCycle();
+      // this.cycleDisplay = this.getCycleDisplay();
+      
 
       // Backend Service Init
       this.response = await this.getAllData(environment.urls);
@@ -197,8 +197,14 @@
       localStorage.setItem('index', index.toString());
    }
 
+   // date helper
+   getLocaleTimeString(date: Date): string {
+      return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+   }
 
-
+   getLocaleDateString(date: Date): string {
+      return date.toLocaleDateString([], {day: '2-digit', month: '2-digit', year:'numeric'});
+   }
 
    setChartData(): void {
       // Donut Chart with Team Scores
@@ -225,7 +231,7 @@
          .forEach((element: string[]) => {
             chartOptionsMixedClone.series[0].data.push(parseInt(element[2]));
             chartOptionsMixedClone.series[1].data.push(parseInt(element[1]));
-            chartOptionsMixedClone.xaxis.categories.push(element[0] + ". " + this.checkpoints[count].localeDate + " " + this.checkpoints[count].localeTime);
+            chartOptionsMixedClone.xaxis.categories.push(element[0] + ". " + this.getLocaleDateString(this.checkpoints[count].date) + " " + this.getLocaleTimeString(this.checkpoints[count].date));
             count++;
          });
 

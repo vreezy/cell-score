@@ -31,9 +31,9 @@ export class CycleService {
       }
 
       return {
-         cp: 0,
-         localeDate: "error",
-         localeTime: "error",
+         cp: 666,
+         // localeDate: "error",
+         // localeTime: "error",
          date: new Date()
       };
    }
@@ -42,18 +42,18 @@ export class CycleService {
 
       var date = new Date();
       date.setTime(Constants.EPOCH + (cycle * Constants.CYCLE_LENGTH));
-      this.addCheckPoint(date);
+      // this.addCheckPoint(date);
      
       var checkpoints: ICheckpoint[] = [];
-      for (var i = 0; i < 35; i++) {
+      for (var i = 0; i < 36; i++) {
 
          const newDate = new Date();
          newDate.setTime(date.getTime());
 
          checkpoints[i] = {
-            cp: i + 1,
-            localeDate: date.toLocaleDateString(), // this.formatDate(then, Constants.DATE_FORMAT) + (utc ? ' UTC' : ''),
-            localeTime: date.toLocaleTimeString(), // this.formatDate(then, Constants.TIME_FORMAT),
+            cp: i,
+            // localeDate: date.toLocaleDateString(), // this.formatDate(then, Constants.DATE_FORMAT) + (utc ? ' UTC' : ''),
+            // localeTime: date.toLocaleTimeString(), // this.formatDate(then, Constants.TIME_FORMAT),
             date: newDate, // clone
             // isCurrent: this.isCurrentCheckPoint(now, then)
          };
