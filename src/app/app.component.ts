@@ -216,7 +216,7 @@
       this.response.forEach((element :IGetRegionScoreDetails) => {
          const chartOptionsMixedClone = JSON.parse(JSON.stringify(chartOptionsMixedModel)); // deep clone
          
-         var count = 0;
+         var count = 1;
          element.result.scoreHistory
          .reverse()
          .forEach((element: string[]) => {
