@@ -1,7 +1,7 @@
    import { Component } from '@angular/core';
    // import * as moment from 'moment';
    import { environment } from '../environments/environment';
-
+   
    // Services
    import { CycleService } from './cycle.service';
    import { BackendService } from './backend.service';

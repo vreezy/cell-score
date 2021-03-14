@@ -68,11 +68,16 @@
 
    <div *ngIf="!loading">
 
-      <mat-button-toggle-group name="fontStyle" aria-label="Font Style" [value]="indexZeroValue">
+      <button mat-button [matMenuTriggerFor]="menu">{{response[index].result.regionName}}</button>
+      <mat-menu #menu="matMenu" >
+         <button mat-menu-item *ngFor="let ele of response; index as i" (click)="changeIndex(i)" >{{ele.result.regionName}}</button>
+      </mat-menu>
+
+      <!-- <mat-button-toggle-group name="fontStyle" aria-label="Font Style" [value]="indexZeroValue">
          <mat-button-toggle *ngFor="let ele of response; index as i" (click)="changeIndex(i)" [value]="ele.result.regionName">
             {{ele.result.regionName}}
          </mat-button-toggle>
-      </mat-button-toggle-group>
+      </mat-button-toggle-group> -->
 
       <br /><br />
       <mat-divider></mat-divider>
