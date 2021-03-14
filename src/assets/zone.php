@@ -14,7 +14,7 @@ try {
          $url = "http://161.97.93.182:5000/zone3/";
          break;
       case "4":
-         $url = "http://161.97.93.182:5000/zone3/";
+         $url = "http://161.97.93.182:5000/zone4/";
          break;
       default:
          $url = "http://161.97.93.182:5000/zone1/";
