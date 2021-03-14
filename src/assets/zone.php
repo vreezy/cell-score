@@ -13,6 +13,9 @@ try {
       case "3":
          $url = "http://161.97.93.182:5000/zone3/";
          break;
+      case "4":
+         $url = "http://161.97.93.182:5000/zone3/";
+         break;
       default:
          $url = "http://161.97.93.182:5000/zone1/";
          break;
@@ -24,7 +27,7 @@ try {
    http_response_code(200);
    
    echo json_encode($content);
-} catch (Any $e) {
+} catch (Exception $e) {
     http_response_code(503);
     echo json_encode(
         array("message" => "unknow error")
