@@ -86,9 +86,9 @@
    loading = true;
    error = false;
    fetchURLS_PROD = [
-      "https://www.vreezy.de/ingress/cell-score/assets/zone.php",
-      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=2",
-      "https://www.vreezy.de/ingress/cell-score/assets/zone.php?zone=3"
+      "https://cell-score.vreezy.de/assets/zone.php",
+      "https://cell-score.vreezy.de/assets/zone.php?zone=2",
+      "https://cell-score.vreezy.de/assets/zone.php?zone=3"
    ];
 
    fetchURLS_DEV = [

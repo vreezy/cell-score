@@ -1,4 +1,4 @@
-name: deploy at vreezy.de/ingress/cell-score
+name: deploy at https://cell-score.vreezy.de
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       run: |
         npm i -g @angular/cli@10.2.0
         npm install         
-        ng build --prod --base-href /ingress/cell-score/
+        ng build --prod --base-href /
     - name: FTP Deploy
       uses: SamKirkland/FTP-Deploy-Action@2.0.0
       env:

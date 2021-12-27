@@ -1,6 +1,7 @@
 # Install
 
 npm install
+npm install -g @angular/cli
 
 ## MOCK Server
 
@@ -17,9 +18,14 @@ ng serve --configuration=production
 
 ## BUILD
 
+OLD!
 ng build --prod --base-href /ingress/cell-score/
 
+NEW with https://cell-score.vreezy.de
+ng build --prod --base-href / 
+
 --configuration=production
+
 
 ## NG TEST
 works now!
